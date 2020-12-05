@@ -1,13 +1,27 @@
+import 'package:estados_app/Models/usuarios.dart';
+import 'package:estados_app/services/usuarios_service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Pagina1Page extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final usuarioService = Provider.of<UsuariosService>(context);
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          IconButton(
+            icon: Icon(Icons.exit_to_app),
+            onPressed: () {
+              usuarioService.removerUsuario();
+            },
+          )
+        ],
         title: Text('Pagina 1'),
       ),
-      body: InformacionUsuario(),
+      body: usuarioService.existeUsuario
+          ? InformacionUsuario(usuarioService.usuario)
+          : Center(child: Text('hola')),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.accessibility_new),
         onPressed: () {
@@ -19,6 +33,9 @@ class Pagina1Page extends StatelessWidget {
 }
 
 class InformacionUsuario extends StatelessWidget {
+  final Usuario usuario;
+
+  const InformacionUsuario(this.usuario);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -33,25 +50,27 @@ class InformacionUsuario extends StatelessWidget {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           ListTile(
-            title: Text('Nombre'),
+            title: Text('nombre: ${this.usuario.nombre}'),
           ),
           ListTile(
-            title: Text('Edad'),
+            title: Text('edad ${this.usuario.edad}'),
           ),
           Divider(),
           Text(
             'Profesiones',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          ListTile(
+          ...this
+              .usuario
+              .profesiones
+              .map((e) => ListTile(
+                    title: Text(e),
+                  ))
+              .toList()
+          /*  ListTile(
             title: Text('Profesion 1'),
           ),
-          ListTile(
-            title: Text('Profesion 2'),
-          ),
-          ListTile(
-            title: Text('Profesion 3'),
-          ),
+         */
         ],
       ),
     );
